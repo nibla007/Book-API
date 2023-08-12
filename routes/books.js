@@ -21,6 +21,11 @@ export const Books = mongoose.model('books', bookSchema)
 // POST Request
 booksRouter.post('/', async (request, response) => {
   try {
+    // Validate request body
+    if (!request.body.title || !request.body.genre || !request.body.released || !request.body.rating
+      || !request.body.description || !request.body.author) {
+      return response.status(400).json({ error: 'Missing required fields' });
+    }
     const book = new mongoose.models.books();
     book.title = request.body.title;
     book.genre = request.body.genre;
@@ -40,7 +45,7 @@ booksRouter.post('/', async (request, response) => {
 booksRouter.get('/', async (request, response) => {
   try {
     const filters = {};
-    ['title', 'genre', 'name'].forEach(key => {
+    [('title'), 'genre', 'name'].forEach(key => {
       if (request.query[key]) {
         filters[key] = request.query[key];
       }
@@ -50,7 +55,7 @@ booksRouter.get('/', async (request, response) => {
     const skip = (page - 1) * limit;
 
     const [books, totalCount] = await Promise.all([
-      mongoose.models.books.find(filters).limit(limit).skip(skip),
+      mongoose.models.books.find(filters).populate('author').limit(limit).skip(skip),
       mongoose.models.books.countDocuments(filters),
     ]);
 
@@ -59,8 +64,8 @@ booksRouter.get('/', async (request, response) => {
     response.setHeader('X-Total-Count', totalCount);
     response.setHeader('X-Current-Page', page);
     response.setHeader('X-Total-Pages', totalPages);
-
     response.status(200).json(books);
+
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: 'Internal Server Error' });
@@ -113,7 +118,7 @@ booksRouter.delete('/:id', async (request, response) => {
       return response.status(404).json({ error: 'Book not found' });
     }
 
-    response.status(204).json({ message: 'Book deleted successfully', deletedBook });
+    response.status(200).json({ message: 'Book deleted successfully', deletedBook });
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: 'Internal Server Error' });

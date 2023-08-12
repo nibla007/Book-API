@@ -13,6 +13,9 @@ const connection = 'mongodb+srv://albin:T9sNnMwhwlLp0MK0@bookcluster.yx5xwk2.mon
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 100, // 100 requests per minute
+  handler: function (req, res) {
+    res.status(429).json({ message: "Rate limit exceeded. Please wait and try again later." });
+  }
 });
 
 // Apply the rate limit middleware to all requests

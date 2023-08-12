@@ -18,12 +18,19 @@ export const Author = mongoose.model('authors', authorSchema)
 // POST Request
 authorsRouter.post('/', async (request, response) => {
   try {
+    // Validate request body
+    if (!request.body.name || !request.body.email || !request.body.age) {
+      return response.status(400).json({ error: 'Missing required fields' });
+    }
+    if (isNaN(request.body.age)) {
+      return response.status(422).json({ error: 'Field with invalid value' });
+    }
     const author = new mongoose.models.authors();
     author.name = request.body.name;
     author.age = request.body.age;
     author.email = request.body.email;
     const result = await author.save();
-    response.status(201).json(result);
+    response.status(201).json({ message: 'Author added successfully: ', result });
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: 'Internal Server Error' });
@@ -99,7 +106,7 @@ authorsRouter.delete('/:id', async (request, response) => {
     if (!deletedAuthor) {
       return response.status(404).json({ error: 'Author not found' });
     }
-    response.status(204).json({ message: 'Author deleted successfully', deletedAuthor });
+    response.status(200).json({ message: 'Author deleted successfully', deletedAuthor });
   } catch (error) {
     console.error(error);
     response.status(500).json({ error: 'Internal Server Error' });
