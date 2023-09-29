@@ -5,7 +5,7 @@
  
 ### Other links
 
-Mongodb link: mongodb+srv://albin:T9sNnMwhwlLp0MK0@bookcluster.yx5xwk2.mongodb.net/test
+Mongodb link:
 
 [Test report](https://docs.google.com/document/d/1x4Jv219DfUpUFjp8COsTb1DKOXVv3siy8yfbr5mtVvc/edit?usp=sharing)
 
